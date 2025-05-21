@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MovieBot - Seu Assistente de Filmes</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #075e54;
+      --secondary-color: #128c7e;
+      --chat-bg: #e5ddd5;
+      --user-msg: #dcf8c6;
+      --bot-msg: #ffffff;
+      --text-color: #333;
+      --light-text: #888;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+    }
+    
+    body {
+      background-color: #f0f2f5;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .app-container {
+      width: 100%;
+      max-width: 500px;
+      height: 90vh;
+      background-color: white;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .chat-header {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      padding: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .chat-header i {
+      font-size: 1.2rem;
+    }
+    
+    .chat-header h1 {
+      font-size: 1.2rem;
+      font-weight: 500;
+    }
+    
+    .chat-container {
+      flex: 1;
+      padding: 15px;
+      background-color: var(--chat-bg);
+      background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%239C92AC' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .message {
+      max-width: 80%;
+      padding: 10px 15px;
+      border-radius: 7.5px;
+      position: relative;
+      word-wrap: break-word;
+      line-height: 1.4;
+    }
+    
+    .user-message {
+      align-self: flex-end;
+      background-color: var(--user-msg);
+      border-top-right-radius: 0;
+      margin-left: 20%;
+    }
+    
+    .bot-message {
+      align-self: flex-start;
+      background-color: var(--bot-msg);
+      border-top-left-radius: 0;
+      box-shadow: 0 1px 0.5px rgba(0, 0, 0, 0.1);
+      margin-right: 20%;
+    }
+    
+    .input-container {
+      display: flex;
+      padding: 10px;
+      background-color: #f0f2f5;
+      border-top: 1px solid #ddd;
+    }
+    
+    #userInput {
+      flex: 1;
+      padding: 12px 15px;
+      border: none;
+      border-radius: 20px;
+      outline: none;
+      font-size: 1rem;
+    }
+    
+    #sendButton {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      margin-left: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    #sendButton:hover {
+      background-color: var(--secondary-color);
+    }
+    
+    .movie-card {
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
+      padding: 10px;
+      margin-top: 5px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .movie-card h3 {
+      color: var(--primary-color);
+      margin-bottom: 5px;
+      font-size: 1rem;
+    }
+    
+    .movie-card p {
+      font-size: 0.85rem;
+      color: var(--text-color);
+      margin: 3px 0;
+    }
+    
+    .movie-card .label {
+      font-weight: bold;
+      color: var(--secondary-color);
+    }
+    
+    .typing-indicator {
+      display: flex;
+      padding: 10px 15px;
+      background-color: var(--bot-msg);
+      border-radius: 7.5px;
+      align-self: flex-start;
+      margin-right: 20%;
+      box-shadow: 0 1px 0.5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .typing-indicator span {
+      height: 8px;
+      width: 8px;
+      background-color: var(--light-text);
+      border-radius: 50%;
+      display: inline-block;
+      margin: 0 2px;
+      animation: bounce 1.5s infinite ease-in-out;
+    }
+    
+    .typing-indicator span:nth-child(1) {
+      animation-delay: 0s;
+    }
+    
+    .typing-indicator span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    
+    .typing-indicator span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+    
+    @keyframes bounce {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-5px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="chat-header">
+      <i class="fas fa-film"></i>
+      <h1>MovieBot - Assistente de Filmes</h1>
+    </div>
+    
+    <div class="chat-container" id="chatBox">
+      <!-- Mensagens serão inseridas aqui -->
+    </div>
+    
+    <div class="input-container">
+      <input type="text" id="userInput" placeholder="Digite sua mensagem..." autocomplete="off">
+      <button id="sendButton"><i class="fas fa-paper-plane"></i></button>
+    </div>
+  </div>
+
+  <script>
+    let userId = Math.random().toString(36).substring(7);
+    let isFirstMessage = true;
+    let isWaitingForResponse = false;
+
+    // Função para adicionar mensagem no chat
+    function addMessage(sender, message, isMovie = false) {
+      const chatBox = document.getElementById('chatBox');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${sender}-message`;
+      
+      if (isMovie) {
+        const movies = JSON.parse(message);
+        let htmlContent = '';
+        
+        movies.forEach(movie => {
+          htmlContent += `
+            <div class="movie-card">
+              <h3>${movie.title} (${movie.year})</h3>
+              <p><span class="label">Diretor:</span> ${movie.director}</p>
+              <p><span class="label">Elenco:</span> ${movie.cast}</p>
+              <p><span class="label">Gênero:</span> ${movie.genres}</p>
+              <p><span class="label">Popularidade:</span> ${movie.ranking}</p>
+            </div>
+          `;
+        });
+        
+        messageDiv.innerHTML = htmlContent;
+      } else {
+        // Substitui quebras de linha por tags <br> e formata negrito
+        const formattedMessage = message
+          .replace(/\n/g, '<br>')
+          .replace(/\*(.*?)\*/g, '<strong>$1</strong>');
+        
+        messageDiv.innerHTML = formattedMessage;
+      }
+      
+      chatBox.appendChild(messageDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    // Função para mostrar indicador de digitação
+    function showTypingIndicator() {
+      const chatBox = document.getElementById('chatBox');
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'typing-indicator';
+      typingDiv.id = 'typingIndicator';
+      typingDiv.innerHTML = '<span></span><span></span><span></span>';
+      chatBox.appendChild(typingDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    // Função para esconder indicador de digitação
+    function hideTypingIndicator() {
+      const typingIndicator = document.getElementById('typingIndicator');
+      if (typingIndicator) {
+        typingIndicator.remove();
+      }
+    }
+
+    // Função para enviar mensagem
+    async function sendMessage() {
+      const userInput = document.getElementById('userInput');
+      const message = userInput.value.trim();
+      
+      if (!message || isWaitingForResponse) return;
+      
+      addMessage('user', message);
+      userInput.value = '';
+      isWaitingForResponse = true;
+      showTypingIndicator();
+
+      try {
+        const response = await fetch('/interact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            userId, 
+            userInput: isFirstMessage ? message : message 
+          })
+        });
+
+        const data = await response.json();
+        hideTypingIndicator();
+
+        if (data.movies) {
+          addMessage('bot', JSON.stringify(data.movies), true);
+        } else {
+          addMessage('bot', data.response);
+        }
+
+        if (data.skipUserInput) {
+          setTimeout(() => {
+            sendMessage('auto');
+          }, 500);
+        }
+
+        if (isFirstMessage) isFirstMessage = false;
+
+      } catch (error) {
+        hideTypingIndicator();
+        addMessage('bot', 'Desculpe, ocorreu um erro. Por favor, tente novamente.');
+        console.error('Erro:', error);
+      } finally {
+        isWaitingForResponse = false;
+      }
+    }
+
+    // Event listeners
+    document.getElementById('sendButton').addEventListener('click', sendMessage);
+    
+    document.getElementById('userInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
+
+    // Mensagem inicial quando a página carrega
+    setTimeout(() => {
+      addMessage('bot', 'Olá! Eu sou o MovieBot, seu assistente de filmes. Qual é o seu nome?');
+    }, 500);
+  </script>
+</body>
+</html>
